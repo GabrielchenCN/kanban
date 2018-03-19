@@ -1,14 +1,27 @@
 var items=[{
     "itemName":"string",
     "unit":"string",
-    "number":1000000,
-    "endDateTime":1519980600000,
+    "number":1000,
+    "endDateTime":new Date().getTime()+100000,
     "perUpdateNumber":"string"
 },{
     "itemName":"string1",
     "unit":"string",
-    "number":360000,
-    "endDateTime":1519980780000,
+    "number":3000,
+    "endDateTime":new Date().getTime()+300000,
+    "perUpdateNumber":"string"
+}]
+var items2=[{
+    "itemName":"string3",
+    "unit":"string",
+    "number":2000,
+    "endDateTime":new Date().getTime()+200000,
+    "perUpdateNumber":"string"
+},{
+    "itemName":"string4",
+    "unit":"string",
+    "number":4000,
+    "endDateTime":new Date().getTime()+400000,
     "perUpdateNumber":"string"
 }]
 var num = 0;
@@ -32,6 +45,7 @@ function timer(items,options={refreshInterval:1000}){
 }
 
 function numRender(item){
+
     if(item.step< item.ItemRefreshTimes){
         
         num +=item.perUpdateNumber;
@@ -40,6 +54,12 @@ function numRender(item){
         clearInterval(oItemInterval[item.itemName]);
     }
     console.log(num);
+    $(".mytimer").html("$"+timerFormat(num));
+    // $(".mytimer").data("from",$(".mytimer").data("to"));
+    // $(".mytimer").data("to",timerFormat(num));
+    // $(".mytimer").countTo();
 }
-
-timer(items,{refreshInterval:1000})
+function timerFormat(number){
+    return new Intl.NumberFormat('en-IN').format(number);
+}
+timer(items,{refreshInterval:100})
