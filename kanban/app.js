@@ -16,4 +16,18 @@ jQuery(function ($) {
 	options = $.extend({}, options || {}, $this.data('countToOptions') || {});
 	$this.countTo(options);
   }
+
+  $(".shape").shape();
+  $(".addItem").on('click',function(e){
+    $(e.target).parents('.shape').shape('flip over');
+  })
+  $(".saveBtn").on('click', function (e) {
+    $(e.target).parents('.shape').shape('flip over');
+  })
+  $('.menu .item')
+    .tab()
+
+
+  
+
 });
