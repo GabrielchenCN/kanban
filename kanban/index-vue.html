@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/grid.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/card.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/shape.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/button.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/icon.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/form.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/tab.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/menu.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/grid.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/checkbox.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/popup.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/statistic.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/transition.min.css" />
+
+</head>
+
+<body>
+  <h1>Revenue Kanban</h1>
+  <div class="ui pointing secondary menu">
+    <a class="item active" data-tab="first">Public</a>
+    <a class="item" data-tab="second">Private</a>
+  </div>
+  <div class="ui tab segment active" data-tab="first" id="Public_Kanban">
+    <div class="ui stackable four column grid">
+      <!-- <div class="six wide column" > -->
+      <div v-for="kanban in kanbans" is="kanban" v-bind="kanban"  v-on:removekanban="removeKanban" v-on:addkanbanitem="addkanbanItem"></div>
+    </div>
+  </div>
+
+  </div>
+  <div data-tab="second" class="ui tab segment" id="Private_Kanban">
+      <div class="ui stackable four column grid">
+        <!-- <div class="six wide column" > -->
+        <div v-for="kanban in kanbans" is="kanban" v-bind="kanban"  v-on:removekanban="removeKanban" v-on:addkanbanitem="addkanbanItem" v-on:publish="publish"></div>
+        <!-- add kanban template -->
+        <div class="ui people shape column">
+          <div class="sides">
+            <div class="active side">
+              <div class="ui card">
+                <div class="content">
+                  <div class="header"></div>
+                  <div class="meta addItem">
+                    <a></a>
+                  </div>
+                  <div class="count-title count-number count-number-empty"  v-on:click="FlipOverToAdd">
+                  <i class="plus icon"></i>
+        
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="side">
+              <div class="ui card">
+        
+                <div class="content">
+                    <div class="ui form">
+                      <div class="inline  field">
+                        <label>Kanban Name</label>
+                        <input type="text" placeholder="Item Name" v-model="kanbanName">
+                      </div>
+                      <!-- <div class="inline field">
+                        <div class="ui toggle checkbox">
+                          <input type="checkbox" name="status" tabindex="1" class="hidden">
+                          <label>Do not public this kanban</label>
+                        </div>
+                      </div> -->
+                  
+                    </div>
+                </div>
+                <div class="extra content">
+                  <a class="saveBtn"  v-on:click="KanbanFlipOverToSave">
+                    <i class="plus icon"></i>
+                    SAVE
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+   
+
+  </div>
+
+
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/shape.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/form.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/tab.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/checkbox.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/popup.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/transition.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+
+  <script src="kanban.js"></script>
+  <script src="timer.js"></script>
+  <script src="app.js"></script>
+  <script type="text/x-template" id="kanban-template">
+      <div class="ui people shape column">
+        <div class="sides">
+          <div class="active side">
+            <div class="ui card">
+              <div class="content">
+                <i class="right floated plus link icon" v-on:click="FlipOverToAdd" v-show="!isPublic"></i>
+                <i class="left floated trash alternate link icon" v-on:click="removeKanbanInChild" v-show="!isPublic"></i>
+                <div class="header">{{name}}</div>
+                <div class="mytimer count-title count-number">
+                  ${{currentNum}}
+                </div>
+               
+              </div>
+              <div class="ui fluid popup bottom center transition hidden itempopup" :id="id">
+                <div class="ui stackable four column grid">
+                   <div v-for="item in currentItems">
+                        <div class="column">
+                              <h4 class="ui header">{{item.itemName}}</h4>
+                              <p>
+                                 per second add:<b>{{item.perSecUpdateNumbertoFixed?item.perSecUpdateNumbertoFixed:0}}</b></p>
+                              <!-- <div class="ui button"> <i class="minus icon"></i>
+                             </div> -->
+                        </div>
+                  </div>
+                </div>
+              </div>
+              <div class="extra content">
+                <span class="left floated like">
+                  <i class="like icon"></i>
+                  Like
+                </span>
+    
+                <a class="right floated star" v-show="!isPublic" v-on:click="publishKanban">
+                  <i class="upload link icon"></i>
+                  Publish
+                </a>
+              </div>
+    
+            </div>
+          </div>
+          <div class="side">
+            <div class="ui card">
+              <div class="content">
+                <div class="header">Add Item
+                   <i class="right floated window close outline link icon header" v-on:click="cardFlipBack" ></i>
+                </div>
+               
+              </div>
+              <div class="content">
+                <div class="ui form" >
+                  <div class="inline field" :class="itemName?'':'error'">
+                    <label>Item name</label>
+                    <input type="text" placeholder="Item Name" v-bind:value="itemName" v-on:input="updateNameValue($event.target.value)">
+                  </div>
+                  <div class="inline field" :class="itemNum?'':'error'">
+                      <label>Income Number</label>
+                      <input type="text" placeholder="Income Number" v-bind:value="itemNum" v-on:input="updateNumValue($event.target.value)">
+                  </div>
+                  <div class="inline field" :class="itemStartDate?'':'error'">
+                      <label>Start Date</label>
+                      <input type="text" placeholder="2018/04/01" v-bind:value="itemStartDate" v-on:input="updateStartDateValue($event.target.value)">
+                  </div>
+                  <div class="inline field" :class="itemEndDate?'':'error'">
+                        <label>End Date</label>
+                        <input type="text" placeholder="2018/04/13" v-bind:value="itemEndDate" v-on:input="updateEndDateValue($event.target.value)">
+                  </div>
+                </div>
+              </div>
+                    <div class="extra content">
+                      <a class="saveBtn" v-on:click="FlipOverToSave">
+                        <i class="save icon"></i>
+                        SAVE
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+    </script>
+
+</body>
+
+</html>

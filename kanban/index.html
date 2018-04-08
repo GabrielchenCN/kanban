@@ -89,7 +89,7 @@
           </div>
         </div>
       </div>
-      <div class="col_third end">
+      <div class="col_third ">
         <div class="ui people shape">
           <div class="sides">
             <div class="active side">
@@ -147,6 +147,39 @@
           </div>
         </div>
       </div>
+      <div class="col_third end">
+        <div class="ui people shape">
+          <div class="sides">
+            <div class="active side">
+              <div class="ui card">
+                <div class="content">
+                  <div class="header"></div>
+                  <div class="meta addItem">
+                    <a></a>
+                  </div>
+                  <div class="count-title count-number count-number-empty">
+                    <i class="plus icon"></i>
+                   
+                  </div>
+                </div>
+               
+      
+              </div>
+            </div>
+            <div class="side">
+              <div class="ui card">
+      
+                <div class="content">
+               
+                </div>
+                <div class="extra content">
+                
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -163,6 +196,64 @@
   <script src="kanban.js"></script>
   <script src="app.js"></script>
   <script src="timer.js"></script>
+  <script type="text/x-template" id="kanban-template">
+    <div class="ui people shape">
+      <div class="sides">
+        <div class="active side">
+          <div class="ui card">
+            <div class="content">
+              <div class="header">{{name}}</div>
+              <div class="meta addItem">
+                <a>add item</a>
+              </div>
+              <div class=" mytimer count-title count-number">
+                ${{currentNum}}
+                    </div>
+            </div>
+            <div class="extra content">
+              <span class="left floated like">
+                <i class="like icon"></i>
+                Like
+                    </span>
+  
+              <span class="right floated star">
+                <i class="share icon"></i>
+                Publish
+                    </span>
+            </div>
+  
+          </div>
+        </div>
+        <div class="side">
+          <div class="ui card">
+  
+            <div class="content">
+              <div class="ui form">
+                <div class="inline  field">
+                  <label>Item name</label>
+                  <input type="text" placeholder="Item Name">
+                      </div>
+                  <div class="inline field">
+                    <label>Income Number</label>
+                    <input type="text" placeholder="Income Number">
+                      </div>
+                    <div class="inline field">
+                      <label>End Date</label>
+                      <input type="text" placeholder="2018/04/13">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="extra content">
+                    <a class="saveBtn">
+                      <i class="plus icon"></i>
+                      SAVE
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+  </script>
 </body>
 
 </html>

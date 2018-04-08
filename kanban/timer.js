@@ -24,6 +24,9 @@ function KanBanObj(options) {
     this.ItemRefreshTimes = options.ItemRefreshTimes || 100;
     // this.perUpdateNumber = options.perUpdateNumber || null;
     this.oItemInterval = {};
+    if (options.items){
+        this.addItems();
+    }
     this.addItems = function (aItems){
         this.items=this.items.concat(aItems);
         this.addTimers(aItems);
@@ -39,11 +42,12 @@ function KanBanObj(options) {
         } else {
             clearInterval(this.oItemInterval[oItem.itemName]);
         }
-        console.log("num",this.num);
-        // console.log(num);
-        console.log("perUpdateNumber", oItem.itemName, oItem.perUpdateNumber);
-        console.log("step", oItem.itemName, oItem.step);
-        $(this.DomId).html("$" + timerFormat(this.num));
+        // console.log("num",this.num);
+        // // console.log(num);
+        // console.log("perUpdateNumber", oItem.itemName, oItem.perUpdateNumber);
+        // console.log("step", oItem.itemName, oItem.step);
+        // $(this.DomId).html("$" + timerFormat(this.num));
+        this.currentNum=this.num;
     }
     
     this.addTimers = function (items, options = { refreshInterval: 100 }){
@@ -87,14 +91,14 @@ function PrivateKanBan(options) {
 PrivateKanBan.prototype = new KanBanObj({})
 
 
-var myKanban = new KanBanObj({ DomId: ".mytimer"});
-var myKanban2 = new KanBanObj({ DomId: ".mytimer2"});
-myKanban.addItems(items);
-setTimeout(() => {
-    myKanban.addItems(items2);
-}, 5000);
-myKanban.getItems();
-myKanban2.addItems(myKanban2.mockItems());
-setTimeout(() => {
-    myKanban2.addItems(myKanban2.mockItems());
-}, 6000);
+// var myKanban = new KanBanObj({ DomId: ".mytimer"});
+// var myKanban2 = new KanBanObj({ DomId: ".mytimer2"});
+// myKanban.addItems(items);
+// setTimeout(() => {
+//     myKanban.addItems(items2);
+// }, 5000);
+// myKanban.getItems();
+// myKanban2.addItems(myKanban2.mockItems());
+// setTimeout(() => {
+//     myKanban2.addItems(myKanban2.mockItems());
+// }, 6000);

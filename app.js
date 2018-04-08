@@ -2,6 +2,8 @@ const Koa = require('koa');
 const app = new Koa();
 const router = require('koa-router')();
 const koaBody = require('koa-body');
+const path = require('path')
+const static = require('koa-static')
 const databaseInst = require('./db.js');
 const db = databaseInst.database;
 let kanbanCollection = null;
@@ -14,10 +16,20 @@ setTimeout(function(){
 
 app.use(koaBody({ multipart: true }));
 
+// 静态资源目录对于相对入口文件index.js的路径
+const staticPath = './kanban'
+
+app.use(static(
+  path.join(__dirname, staticPath)
+))
+
 //get all public kanban
-router.get('/kanban',
+router.get('/kanbans',
   (ctx) => {
-    ctx.body = JSON.stringify(kanbanCollection.find({ isPrivate: false }));
+    // ctx.body = JSON.stringify(kanbanCollection.find({ "isPublic":"true" }));
+    ctx.body = kanbanCollection.chain().find({ "isPublic": "true" }).data();
+    console.log(kanbanCollection.chain().find({ "isPublic": "true" }).data());
+    // ctx.body = JSON.stringify(kanbanCollection.find());
   }
 );
 //get kanban by id
@@ -27,7 +39,7 @@ router.get('/kanban/:id',
     if(!doc){
       return ctx.body = JSON.stringify({msg:"not found",data:[]});
     }
-    if(!doc.isPrivate){
+    if (doc.isPublic){
       ctx.body = JSON.stringify(doc);
     }else{
        //todo:should check the user auth

@@ -42,13 +42,14 @@ let kanbanStrcu ={
     "total":"string",
     "shortUrl62hex":"string",
     "user":"string",
-    "isPrivate":"Boolean",
+    "isPublic":"Boolean",
     "item":[{
-        "itemName":"string",
-        "unit":"string",
-        "number":"string",
-        "endDateTime":"timestamp",
-        "perUpdateNumber":"string"
+        "itemName": "string",
+        "unit": "string",
+        "number": "",
+        "startDateTime": "",
+        "endDateTime": "",
+        "perUpdateNumber": "string"
     }],
 };
 let shortUrlStrcu ={
@@ -56,7 +57,7 @@ let shortUrlStrcu ={
     "shortUrl62hex":"string",
     "originalUrl":"string",
     "user":"string",
-    "isPrivate":"Boolean"
+    "isPublic":"Boolean"
 };
 
 
