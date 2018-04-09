@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/popup.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/statistic.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/transition.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/list.min.css" />
 
 </head>
 
@@ -110,13 +111,13 @@
   <script type="text/x-template" id="kanban-template">
       <div class="ui people shape column">
         <div class="sides">
-          <div class="active side">
+          <div class="active side KanbanCard">
             <div class="ui card">
               <div class="content">
                 <i class="right floated plus link icon" v-on:click="FlipOverToAdd" v-show="!isPublic"></i>
                 <i class="left floated trash alternate link icon" v-on:click="removeKanbanInChild" v-show="!isPublic"></i>
                 <div class="header">{{name}}</div>
-                <div class="mytimer count-title count-number">
+                <div class="mytimer count-title count-number" v-on:click="reviewDetail" >
                   ${{currentNum}}
                 </div>
                
@@ -148,7 +149,36 @@
     
             </div>
           </div>
-          <div class="side">
+          <div class="side KanbanItemReview">
+             <div class="ui card">
+             <div class="content">
+                <div class="header">Review
+                   <i class="right floated window close outline link icon header" v-on:click="cardFlipBack" ></i>
+                </div>  
+              </div>
+              <div class="content">
+                <div class="ui relaxed divided list">
+                <div v-for="item in currentItems" class="item">
+                
+                    <!-- <img class="ui avatar image" src="/images/avatar/small/helen.jpg"> -->
+                    <div class="right floated content" v-show="!isPublic">
+                      <div class="ui button mini circular icon "> 
+                        <i class="icon cut"></i>
+                      </div>
+                    </div>
+                    <div class="content">
+                      <div class="header">{{item.itemName}}</div>
+                      <div class="description">income number:{{item.number}}</div>
+                      <div class="description">Date:{{item.formatterStartDate}}-{{item.formatterEndDate}}</div>
+                    </div>
+                 
+                </div>
+              
+              </div>
+            </div>
+           </div>
+          </div>
+          <div class="side KanbanItem">
             <div class="ui card">
               <div class="content">
                 <div class="header">Add Item

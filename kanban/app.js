@@ -68,6 +68,8 @@ jQuery(function ($) {
             o.perSecUpdateNumbertoFixed = (o.perUpdateNumber *10).toFixed(4);
             o.ItemRefreshTimes = refreshTimes;
             o.step = 0;
+            o.formatterEndDate = new Date(Number(o.endDateTime)).toLocaleDateString();
+            o.formatterStartDate = new Date(Number(o.startDateTime)).toLocaleDateString();
 
             that.num += o.initializeNum;
             console.log(o);
@@ -82,11 +84,14 @@ jQuery(function ($) {
       removeKanbanInChild: function (e) {
         this.$emit('removekanban', { id: this.$props.id });
       },
+      reviewDetail:function(e){
+        $(e.target).parents('.shape').shape('set next side', '.KanbanItemReview.side').shape('flip over');
+      },
       cardFlipBack: function (e) {
-        $(e.target).parents('.shape').shape('flip over');
+        $(e.target).parents('.shape').shape('set next side', '.KanbanCard.side').shape('flip over');
       },
       FlipOverToAdd: function (e) {
-        $(e.target).parents('.shape').shape('flip over');
+        $(e.target).parents('.shape').shape('set next side', '.KanbanItem.side').shape('flip over');
       },
       FlipOverToSave: function (e) {
         if (!(this.itemName && this.itemNum && this.itemEndDate && this.itemStartDate)){
@@ -116,7 +121,7 @@ jQuery(function ($) {
         this.$set(this.$data, 'itemNum', "")
         this.$set(this.$data, 'itemEndDate', "")
         this.$set(this.$data, 'itemStartDate', "")
-        $(e.target).parents('.shape').shape('flip over');
+        $(e.target).parents('.shape').shape('set next side', '.KanbanCard.side').shape('flip over');
 
       },
       updateNameValue: function (val) {
@@ -237,11 +242,12 @@ jQuery(function ($) {
     methods: {
       publish: function (oPayload) {
         console.log(oPayload);
-        oPayload.kanban.isPublic = true;
+        var oKanban = jQuery.extend(true, {}, oPayload.kanban);
+        oKanban.isPublic = true;
         $.ajax({
           url: '/kanban',
           method: 'PUT',
-          data: oPayload.kanban
+          data: oKanban
         }).done(function () {
           alert("success");
         })
@@ -253,11 +259,11 @@ jQuery(function ($) {
         this.$set(this.$data, 'kanbans', this.getKanban());
       },
       FlipOverToAdd: function (e) {
-        $(e.target).parents('.shape').shape('flip over');
+        $(e.target).parents('.shape').shape('set next side', '.KanbanItem.side').shape('flip over');
       },
       KanbanFlipOverToSave: function (e) {
         this.addKanban(this.$data.kanbanName);
-        $(e.target).parents('.shape').shape('flip over');
+        $(e.target).parents('.shape').shape('set next side', '.KanbanCard.side').shape('flip over');
       },
       getKanban: function () {
         var mKanbans = null;
