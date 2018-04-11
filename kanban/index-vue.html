@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
-  <link rel="stylesheet" href="app.css">
+  <title>Kanban Pre-alpha</title>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/grid.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/card.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/shape.min.css" />
@@ -21,6 +21,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/statistic.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/transition.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/list.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/modal.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/dimmer.min.css" />
+    <link rel="stylesheet" href="app.css">
 
 </head>
 
@@ -91,8 +94,47 @@
    
 
   </div>
+ <!-- modal -->
+ <div id="kanban_msg">
+    <div class="ui basic modal">
+      <div class="ui icon header">
+        <i class="archive icon"></i>
+        {{msg_header}}
+      </div>
+      <div class="content">
+        <p>{{msg_content}}</p>
+      </div>
+      <div class="actions">
+        <div class="ui red basic cancel inverted button" :click="onCancel">
+          <i class="remove icon"></i>
+          Cancel
+        </div>
+        <div class="ui green ok inverted button" :click="onOk">
+          <i class="checkmark icon"></i>
+          Ok
+        </div>
+      </div>
+    </div>
 
-
+    <div class="ui mini modal transition">
+      <div class="header">
+        {{msg_header}}
+      </div>
+      <div class="content">
+          <p>{{msg_content}}</p> 
+      </div>
+      <div class="actions">
+        <div class="ui negative button">
+          No
+        </div>
+        <div class="ui positive right labeled icon button">
+          Yes
+          <i class="checkmark icon"></i>
+        </div>
+      </div>
+    </div>
+ </div>
+  
 
 
 
@@ -103,6 +145,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/checkbox.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/popup.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/transition.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/modal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/components/dimmer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
 
   <script src="kanban.js"></script>
@@ -167,9 +211,10 @@
                       </div>
                     </div>
                     <div class="content">
-                      <div class="header">{{item.itemName}}</div>
-                      <div class="description">income number:{{item.number}}</div>
-                      <div class="description">Date:{{item.formatterStartDate}}-{{item.formatterEndDate}}</div>
+                      <div class="header">{{item.itemName}}
+                      </div>
+                      <div class="description  left floated">income number:{{item.number}}</div>
+                      <div class="description  left floated" :class="item.itemStatusColor">Date:{{item.formatterStartDate}}-{{item.formatterEndDate}}</div>
                     </div>
                  
                 </div>

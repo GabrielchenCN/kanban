@@ -43,3 +43,16 @@ body {
   .fa-2x { margin: 0 auto; float: none; display: table; color: #4ad1e5; }
   .card:hover{transform: scale(1.1);}
   .ui.popup{overflow:auto;}
+ .ui.modal>.content{ width: auto;}
+ .color-green{
+ 
+    color: #2ecc40 !important;
+ }
+ .color-red{
+
+    color: #ff695e !important;
+ }
+ .color-orange{
+      
+    color: #ff851b !important;
+ }

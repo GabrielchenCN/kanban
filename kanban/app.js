@@ -1,10 +1,7 @@
 
 jQuery(function ($) {
-  var resizePopup = function () { $('.ui.popup').css('max-height', "100vh"); };
-
-  $(window).resize(function (e) {
-    resizePopup();
-  });
+  //event bus
+  var bus = new Vue()
   //kanban component
   Vue.component('kanban', {
     template: '#kanban-template',
@@ -59,17 +56,21 @@ jQuery(function ($) {
 
         items.forEach(function (o, i) {
           if (o.endDateTime <= iNow || o.startDateTime >= iNow) {
+            o.itemStatusColor = o.endDateTime <= iNow?"color-orange":"color-green"
+            o.formatterEndDate = new Date(Number(o.endDateTime)).toLocaleDateString();
+            o.formatterStartDate = new Date(Number(o.startDateTime)).toLocaleDateString();
             return false
           } else {
             let refreshTimes = Math.floor((o.endDateTime - iNow) / (refreshInterval));
             o.initializeNum = ((iNow - o.startDateTime) / (o.endDateTime - o.startDateTime)) * o.number
             o.remainingNum = ((o.endDateTime - iNow) / (o.endDateTime - o.startDateTime)) * o.number;
             o.perUpdateNumber = o.remainingNum / refreshTimes;
-            o.perSecUpdateNumbertoFixed = (o.perUpdateNumber *10).toFixed(4);
+            o.perSecUpdateNumbertoFixed = (o.perUpdateNumber * 10).toFixed(4);
             o.ItemRefreshTimes = refreshTimes;
             o.step = 0;
             o.formatterEndDate = new Date(Number(o.endDateTime)).toLocaleDateString();
             o.formatterStartDate = new Date(Number(o.startDateTime)).toLocaleDateString();
+            o.itemStatusColor = ""
 
             that.num += o.initializeNum;
             console.log(o);
@@ -82,9 +83,19 @@ jQuery(function ($) {
         this.$emit('publish', { kanban: this.$props });
       },
       removeKanbanInChild: function (e) {
-        this.$emit('removekanban', { id: this.$props.id });
+        // this.$emit('removekanban', { id: this.$props.id });
+        var that = this;
+        bus.$emit('showModel', {
+          msg_content: "Are you sure you want to delete your kanban",
+          msg_header: "Delete Kanban",
+          msg_type: "compatibility",
+          eventName: "removeKanban",
+          eventPayload: { id: that.$props.id },
+          id: ".ui.mini.modal"
+        });
+
       },
-      reviewDetail:function(e){
+      reviewDetail: function (e) {
         $(e.target).parents('.shape').shape('set next side', '.KanbanItemReview.side').shape('flip over');
       },
       cardFlipBack: function (e) {
@@ -94,7 +105,7 @@ jQuery(function ($) {
         $(e.target).parents('.shape').shape('set next side', '.KanbanItem.side').shape('flip over');
       },
       FlipOverToSave: function (e) {
-        if (!(this.itemName && this.itemNum && this.itemEndDate && this.itemStartDate)){
+        if (!(this.itemName && this.itemNum && this.itemEndDate && this.itemStartDate)) {
           return false;
         }
         var mItems = [{
@@ -112,7 +123,7 @@ jQuery(function ($) {
             itemName: that.itemName,
             number: that.itemNum,
             endDateTime: new Date(that.itemEndDate).getTime(),
-            startDateTime: new Date(that.itemStartDate).getTime(),
+            startDateTime: new Date(that.itemStartDate).getTime()
           }
         });
 
@@ -192,17 +203,23 @@ jQuery(function ($) {
           dataType: "json",
         }).done(function (data) {
           console.log(data);
-          var mKanbans = []; 
+          var mKanbans = [];
           data.forEach(function (kanban) {
             var oKanban = {
               id: kanban.id, items: kanban.items, name: kanban.name, isPublic: kanban.isPublic
             }; mKanbans.push(oKanban)
           })
           that.$set(that.$data, 'kanbans', mKanbans);
-          alert("success");
+          // alert("success");
         })
           .fail(function () {
-            alert("error");
+            bus.$emit('showModel', {
+              msg_content: "Sorry, Something Error",
+              msg_header: "Server internal error",
+              msg_type: "Server",
+              id: ".ui.basic.modal"
+            });
+
           })
       },
       removeKanban: function (oPayload) {
@@ -225,10 +242,38 @@ jQuery(function ($) {
     el: '#Private_Kanban',
     data: {
       kanbanName: "",
-      kanbans: []
+      kanbans: [{
+        id: "timer",
+        name: "timer",
+        isPublic: true,
+        currentNum: 0,
+        items: [{
+          "itemName": "string",
+          "unit": "string",
+          "number": 10000,
+          "startDateTime": new Date("2018/04/05").getTime(),
+          "endDateTime": new Date().getTime() + 86400000 * 3,
+          "perUpdateNumber": "string",
+          "formatterStartDate": "",
+          "formatterEndDate": "",
+        }, {
+          "itemName": "string1",
+          "unit": "string",
+          "number": 16000,
+          "startDateTime": new Date("2018/04/09").getTime(),
+          "endDateTime": new Date().getTime() + 86400000 * 2,
+          "perUpdateNumber": "string",
+          "formatterStartDate": "",
+          "formatterEndDate": "",
+        }]
+      }]
     },
     created: function () {
+      var that = this;
       this.updateKanbans()
+      bus.$on("removeKanban", function (oPayload) {
+        that.removeKanban(oPayload);
+      })
     },
     updated: function () {
       // 挂载
@@ -252,7 +297,12 @@ jQuery(function ($) {
           alert("success");
         })
           .fail(function () {
-            alert("error");
+            bus.$emit('showModel', {
+              msg_content: "Sorry, Something Error",
+              msg_header: "Server internal error",
+              msg_type: "Server",
+              id: ".ui.basic.modal"
+            });
           })
       },
       updateKanbans: function () {
@@ -327,7 +377,49 @@ jQuery(function ($) {
   // $(".saveBtn").on('click', function (e) {
   //   $(e.target).parents('.shape').shape('flip over');
   // })
+  var vmMessage = new Vue({
+    el: '#kanban_msg',
+    data: {
+      msg_content: "Sorry, Your browser is not supported ",
+      msg_header: "Browser compatibility",
+      msg_type: "compatibility",
+      eventName: "",
+      eventPayload: "",
+      id: ".ui.basic.modal"
+    },
+    mounted: function () {
+      var vmMsg = this;
+      // 在组件 B 创建的钩子中监听事件
+      bus.$on('showModel', function (oData) {
+        vmMsg.getModal(oData);
+        $(oData.id).modal({
+          onApprove: function () {
+            bus.$emit(oData.eventName, oData.eventPayload);
+          }
+        })
+          .modal('show')
+          ;
+      })
 
+
+      if (typeof (Storage) !== "undefined") {
+
+      } else {
+        $(this.id)
+          .modal('show')
+          ;
+      }
+    },
+    methods: {
+      onCancel: function () { },
+      onOk: function () { },
+      getModal: function (oData) {
+        this.$set(this.$data, "msg_header", oData.msg_header);
+        this.$set(this.$data, "msg_content", oData.msg_content);
+        this.$set(this.$data, "msg_type", oData.msg_type);
+      },
+    }
+  })
 
 
 });
