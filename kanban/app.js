@@ -348,7 +348,14 @@ jQuery(function ($) {
           method: 'PUT',
           data: oKanban
         }).done(function () {
-          alert("success");
+          bus.$emit('showModel', {
+            msg_content: "You have successfully released your first Kanban!",
+            msg_header: "Congratulations",
+            msg_type: "Server",
+            eventName: "",
+            eventPayload: "",
+            id: ".ui.basic.modal"
+          });
         })
           .fail(function () {
             bus.$emit('showModel', {
