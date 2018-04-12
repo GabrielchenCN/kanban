@@ -1,7 +1,11 @@
 
 jQuery(function ($) {
   //event bus
-  var bus = new Vue()
+  var bus = new Vue();
+
+  $("#PublicTab").on("click", function () {
+    bus.$emit('updatePubKanban');
+  })
   //kanban component
   Vue.component('kanban', {
     template: '#kanban-template',
@@ -17,6 +21,8 @@ jQuery(function ($) {
         itemNum: "",
         itemEndDate: "",
         itemStartDate: "",
+        formatterEndDate: "",
+        formatterStartDate: "",
         oItemInterval: {},
         num: 0,
       }
@@ -56,7 +62,7 @@ jQuery(function ($) {
 
         items.forEach(function (o, i) {
           if (o.endDateTime <= iNow || o.startDateTime >= iNow) {
-            o.itemStatusColor = o.endDateTime <= iNow?"color-orange":"color-green"
+            o.itemStatusColor = o.endDateTime <= iNow ? "color-orange" : "color-green"
             o.formatterEndDate = new Date(Number(o.endDateTime)).toLocaleDateString();
             o.formatterStartDate = new Date(Number(o.startDateTime)).toLocaleDateString();
             return false
@@ -68,8 +74,6 @@ jQuery(function ($) {
             o.perSecUpdateNumbertoFixed = (o.perUpdateNumber * 10).toFixed(4);
             o.ItemRefreshTimes = refreshTimes;
             o.step = 0;
-            o.formatterEndDate = new Date(Number(o.endDateTime)).toLocaleDateString();
-            o.formatterStartDate = new Date(Number(o.startDateTime)).toLocaleDateString();
             o.itemStatusColor = ""
 
             that.num += o.initializeNum;
@@ -104,8 +108,43 @@ jQuery(function ($) {
       FlipOverToAdd: function (e) {
         $(e.target).parents('.shape').shape('set next side', '.KanbanItem.side').shape('flip over');
       },
+      dateValidationCheck: function (str) {
+        var re = new RegExp("^([0-9]{4})[./]{1}([0-9]{1,2})[./]{1}([0-9]{1,2})$");
+        var strDataValue;
+        var infoValidation = true;
+        if ((strDataValue = re.exec(str)) != null) {
+          var i;
+          i = parseFloat(strDataValue[1]);
+          if (i <= 0 || i > 9999) { /*年*/
+            infoValidation = false;
+          }
+          i = parseFloat(strDataValue[2]);
+          if (i <= 0 || i > 12) { /*月*/
+            infoValidation = false;
+          }
+          i = parseFloat(strDataValue[3]);
+          if (i <= 0 || i > 31) { /*日*/
+            infoValidation = false;
+          }
+        } else {
+          infoValidation = false;
+        }
+   
+        return infoValidation;
+      },
       FlipOverToSave: function (e) {
         if (!(this.itemName && this.itemNum && this.itemEndDate && this.itemStartDate)) {
+          return false;
+        }
+        if (!this.dateValidationCheck(this.itemEndDate) && !this.dateValidationCheck(this.itemStartDate)) {
+          bus.$emit('showModel', {
+            msg_content: "Please enter the correct date format:YYYY/MM/DD",
+            msg_header: "Error",
+            msg_type: "Server",
+            eventName: "",
+            eventPayload: "",
+            id: ".ui.basic.modal"
+          });
           return false;
         }
         var mItems = [{
@@ -123,7 +162,9 @@ jQuery(function ($) {
             itemName: that.itemName,
             number: that.itemNum,
             endDateTime: new Date(that.itemEndDate).getTime(),
-            startDateTime: new Date(that.itemStartDate).getTime()
+            startDateTime: new Date(that.itemStartDate).getTime(),
+            formatterStartDate: that.formatterStartDate,
+            formatterEndDate: that.formatterEndDate
           }
         });
 
@@ -132,7 +173,10 @@ jQuery(function ($) {
         this.$set(this.$data, 'itemNum', "")
         this.$set(this.$data, 'itemEndDate', "")
         this.$set(this.$data, 'itemStartDate', "")
-        $(e.target).parents('.shape').shape('set next side', '.KanbanCard.side').shape('flip over');
+        setTimeout(() => {
+          $(e.target).parents('.shape').shape('set next side', '.KanbanCard.side').shape('flip over');
+        }, 100);
+     
 
       },
       updateNameValue: function (val) {
@@ -141,12 +185,16 @@ jQuery(function ($) {
       updateNumValue: function (val) {
         this.$set(this.$data, 'itemNum', val)
       },
-      updateEndDateValue: function (val) {
-        this.$set(this.$data, 'itemEndDate', val)
-      },
+
       updateStartDateValue: function (val) {
         this.$set(this.$data, 'itemStartDate', val)
+        this.$set(this.$data, 'formatterStartDate', new Date(val).toLocaleDateString())
       },
+      updateEndDateValue: function (val) {
+        this.$set(this.$data, 'itemEndDate', val)
+        this.$set(this.$data, 'formatterEndDate', new Date(val).toLocaleDateString())
+
+      }
     },
   })
   //vue.js
@@ -181,9 +229,13 @@ jQuery(function ($) {
     },
     updated: function () {
       // 挂载
+      var that = this;
       $(".shape").shape();
       $('.menu .item')
         .tab({ history: false })
+      bus.$on("updatePubKanban", function () {
+        that.updatePubKanban();
+      })
       // $('.card')
       //   .popup({
       //     popup: $(".itempopup"),
@@ -217,6 +269,8 @@ jQuery(function ($) {
               msg_content: "Sorry, Something Error",
               msg_header: "Server internal error",
               msg_type: "Server",
+              eventName: "",
+              eventPayload: "",
               id: ".ui.basic.modal"
             });
 
@@ -301,6 +355,8 @@ jQuery(function ($) {
               msg_content: "Sorry, Something Error",
               msg_header: "Server internal error",
               msg_type: "Server",
+              eventName: "",
+              eventPayload: "",
               id: ".ui.basic.modal"
             });
           })
@@ -395,6 +451,7 @@ jQuery(function ($) {
         $(oData.id).modal({
           onApprove: function () {
             bus.$emit(oData.eventName, oData.eventPayload);
+            return true
           }
         })
           .modal('show')

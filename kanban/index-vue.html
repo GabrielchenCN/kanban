@@ -30,8 +30,8 @@
 <body>
   <h1>Revenue Kanban</h1>
   <div class="ui pointing secondary menu">
-    <a class="item active" data-tab="first">Public</a>
-    <a class="item" data-tab="second">Private</a>
+    <a class="item active" data-tab="first" id="PublicTab">Public Kanban</a>
+    <a class="item" data-tab="second">Private Kanban</a>
   </div>
   <div class="ui tab segment active" data-tab="first" id="Public_Kanban">
     <div class="ui stackable four column grid">
@@ -158,7 +158,7 @@
           <div class="active side KanbanCard">
             <div class="ui card">
               <div class="content">
-                <i class="right floated plus link icon" v-on:click="FlipOverToAdd" v-show="!isPublic"></i>
+                <i class="right floated plus link icon color-blue" v-on:click="FlipOverToAdd" v-show="!isPublic"></i>
                 <i class="left floated trash alternate link icon" v-on:click="removeKanbanInChild" v-show="!isPublic"></i>
                 <div class="header">{{name}}</div>
                 <div class="mytimer count-title count-number" v-on:click="reviewDetail" >
@@ -179,14 +179,14 @@
                   </div>
                 </div>
               </div>
-              <div class="extra content">
-                <span class="left floated like">
+              <div class="extra content color-grey">
+                <span class="left floated like color-white">
                   <i class="like icon"></i>
                   Like
                 </span>
     
-                <a class="right floated star" v-show="!isPublic" v-on:click="publishKanban">
-                  <i class="upload link icon"></i>
+                <a class="right floated star color-white" v-show="!isPublic" v-on:click="publishKanban" >
+                  <i class="upload link icon "></i>
                   Publish
                 </a>
               </div>
@@ -196,7 +196,7 @@
           <div class="side KanbanItemReview">
              <div class="ui card">
              <div class="content">
-                <div class="header">Review
+                <div class="header">Review Items
                    <i class="right floated window close outline link icon header" v-on:click="cardFlipBack" ></i>
                 </div>  
               </div>
@@ -234,7 +234,7 @@
               <div class="content">
                 <div class="ui form" >
                   <div class="inline field" :class="itemName?'':'error'">
-                    <label>Item name</label>
+                    <label>Project Name</label>
                     <input type="text" placeholder="Item Name" v-bind:value="itemName" v-on:input="updateNameValue($event.target.value)">
                   </div>
                   <div class="inline field" :class="itemNum?'':'error'">
